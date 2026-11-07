@@ -71,38 +71,38 @@ class StudentAI():
                 node.children.append(new_node)
                 node = new_node
                 
-        # Simulation
-        rollout_moves_made = 0
-        win_status = self.board.is_win(current_turn)
-        
-        while win_status == 0:
-            sim_moves = self._get_flattened_moves(current_turn)
-            if not sim_moves:
-                break
-                
-            random_move = random.choice(sim_moves)
-            self.board.make_move(random_move, current_turn)
-            current_turn = self.opponent[current_turn]
-            rollout_moves_made += 1
+            # Simulation
+            rollout_moves_made = 0
             win_status = self.board.is_win(current_turn)
-        
-        # Backpropagation
-        if win_status == self.color:
-            result = 1.0
-        elif win_status == -1:
-            result = 0.5 # Tie
-        else:
-            result = 0.0
+            
+            while win_status == 0:
+                sim_moves = self._get_flattened_moves(current_turn)
+                if not sim_moves:
+                    break
+                    
+                random_move = random.choice(sim_moves)
+                self.board.make_move(random_move, current_turn)
+                current_turn = self.opponent[current_turn]
+                rollout_moves_made += 1
+                win_status = self.board.is_win(current_turn)
+            
+            # Backpropagation
+            if win_status == self.color:
+                result = 1.0
+            elif win_status == -1:
+                result = 0.5 # Tie
+            else:
+                result = 0.0
 
-        while node is not None:
-            node.visits += 1
-            node.wins += result
-            node = node.parent
-        
-        # Undo the moves made during selection and simulation
-        total_moves_to_undo = rollout_moves_made + moves_made_in_selection
-        for _ in range(total_moves_to_undo):
-            self.board.undo()
+            while node is not None:
+                node.visits += 1
+                node.wins += result
+                node = node.parent
+            
+            # Undo the moves made during selection and simulation
+            total_moves_to_undo = rollout_moves_made + moves_made_in_selection
+            for _ in range(total_moves_to_undo):
+                self.board.undo()
 
         best_child = max(root.children, key=lambda c: c.ucb1(exploration_weight=0))
         self.board.make_move(best_child.move, self.color)
