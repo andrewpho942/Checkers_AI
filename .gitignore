@@ -1,1 +1,5 @@
 .vscode/settings.json
+./src/checkers-python/__pycache__/*
+./src/checkers-python/AI_Extensions/*
+./Tools/Sample_AIs/Random_AI/__pycache__/*
+./Tools/Sample_AIs/Random_AI/AI_Extensions/*
